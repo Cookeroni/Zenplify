@@ -87,6 +87,8 @@ Item {
             }
         }
 
+        Panel { id: panel; pill: root }
+
         Behavior on width {
             NumberAnimation {
                 id: widthAnim
