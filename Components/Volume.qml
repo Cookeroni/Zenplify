@@ -12,8 +12,9 @@ Item {
     readonly property PwNode sink: Pipewire.defaultAudioSink
     readonly property real volume: root.sink?.audio?.volume ?? 0
     readonly property bool muted: root.sink?.audio?.muted ?? false
+    readonly property bool ready: root.sink?.ready ?? false
 
-    // Emitted on a genuine volume/mute change (after the startup settle).
+    // Emitted on a genuine volume/mute change (after the startup/resume settle).
     signal changed()
 
     visible: isVisible
@@ -21,14 +22,22 @@ Item {
     // audio.volume/muted are invalid unless the node is tracked.
     PwObjectTracker { objects: [root.sink] }
 
-    // Swallow the initial settle (and any re-settle after the default sink
-    // switches) so the pill doesn't pop on launch or device change.
+    // Swallow the settle that follows any (re)connect of the audio stack.
+    // Launch is one such event; waking from suspend (lid open) is another —
+    // PipeWire re-announces the sink's volume, which would otherwise pop the bar.
     property bool _armed: false
-    Timer { id: armTimer; interval: 700; running: true; onTriggered: root._armed = true }
-    onSinkChanged: { root._armed = false; armTimer.restart(); }
+    Timer { id: armTimer; interval: 1000; onTriggered: root._armed = true }
+    function _rearm() {
+        root._armed = false;
+        if (root.ready)
+            armTimer.restart();
+    }
+    Component.onCompleted: root._rearm()
+    onSinkChanged: root._rearm()
+    onReadyChanged: root._rearm()
 
-    onVolumeChanged: if (root._armed) root.changed()
-    onMutedChanged: if (root._armed) root.changed()
+    onVolumeChanged: if (root._armed && root.ready) root.changed()
+    onMutedChanged: if (root._armed && root.ready) root.changed()
 
     function setVolume(v) {
         if (root.sink?.ready && root.sink.audio) {
