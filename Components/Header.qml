@@ -6,7 +6,7 @@ import qs
 
 Item {
     property var pill
-    property bool listOpen: false
+    property bool listOpen: !wifiModule.showList
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -50,7 +50,10 @@ Item {
                 anchors { fill: parent }
 
                 onClicked: {
-                    if (pill.isExpanded){
+                    if (wifiModule.showList) {
+                        wifiModule.showList = false
+                        wifiModule.pendingSsid = ""
+                    }else {
                         pill.isExpanded = false // Close Panel
                     }
                 }
@@ -66,7 +69,7 @@ Item {
             color: Theme.textPrimary
             elide: Text.ElideRight
 
-            text: "Control Panel" 
+             text: (wifiModule.showList) ? "Wi-Fi" : "Control Panel"
 
             font {
                 bold: true

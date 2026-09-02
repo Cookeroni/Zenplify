@@ -30,9 +30,19 @@ Item {
         pill: panelContent.pill
     }
 
+    Wifi {
+        id: wifiModule
+        anchors {
+            left: parent.left
+            leftMargin: 12
+            top: header.bottom
+            topMargin: 20
+        }
+    }
+
     // Volume + Brightness sliders
     ColumnLayout {
-        anchors.top: header.bottom
+        anchors.top: wifiModule.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: 16
