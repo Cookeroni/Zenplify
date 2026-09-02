@@ -7,7 +7,7 @@ import qs
 Item {
     property var pill
     property var wifi
-    property bool listOpen: !wifiModule.showList
+    property bool listOpen: !wifi.showList
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -132,6 +132,44 @@ Item {
                     anchors { fill: parent }
                     onClicked: wifi.showList ? wifi.rescan() : ""
                 }
+            }
+        }
+
+        // Toggle On/Off
+        Rectangle {
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: 46
+            Layout.preferredHeight: 26
+            color: Theme.panelScrim
+            radius: 13
+            visible: wifi.showList 
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 160
+                }
+            }
+
+            Rectangle {
+                anchors { verticalCenter: parent.verticalCenter }
+                color: (wifi.wifiEnabled && wifi.showList) ? Theme.textPrimary : Theme.textSecondary
+
+                height: 20
+                radius: 10
+                width: 20
+                x: wifi.wifiEnabled && wifi.showList ? parent.width - width - 3 : 3
+
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 160
+                        easing.type: Easing.OutQuad
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors { fill: parent }
+                onClicked: wifi.showList ? wifi.toggle() : ""
             }
         }
     }
