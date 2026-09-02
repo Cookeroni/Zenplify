@@ -8,7 +8,7 @@ Item {
     id: panelContent
 
     property var pill
-    property bool needsKeyboard: false
+    property bool needsKeyboard: wifiModule.passwordPrompt
 
     visible: pill.isExpanded
 
@@ -19,6 +19,8 @@ Item {
         function onIsExpandedChanged() {
             if (!pill.isExpanded) {
                 // Add Future Modules Here
+                wifiModule.showList = false;
+                wifiModule.pendingSsid = "";
             }
         }
         target: pill
@@ -28,6 +30,7 @@ Item {
     Header {
         id: header
         pill: panelContent.pill
+        wifi: wifiModule
     }
 
     Wifi {
