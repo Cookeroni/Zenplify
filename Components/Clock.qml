@@ -1,7 +1,7 @@
 import Quickshell
-import qs
 import QtQuick
 import QtQuick.Layouts
+import qs
 
 
 RowLayout {

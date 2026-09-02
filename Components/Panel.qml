@@ -1,27 +1,24 @@
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
+import qs.Utils
+import "../Utils/audioHelpers.js" as AudioHelpers
+import "../Utils/brightnessHelpers.js" as BrightnessHelpers
 
 Item {
     id: panelContent
 
-    // Signals an active password field to request window keyboard focus. (Implement soon)
-    property bool needsKeyboard: false
-    //readonly property bool needsKeyboard: wifiModule.passwordPrompt  // use this when wifi module is available
-
-    // Reference to the Pill.qml root (passed in, since ids don't cross files).
     property var pill
+    property bool needsKeyboard: false
 
     visible: pill.isExpanded
 
     anchors.fill: parent
 
-    // Closes all list view when closing the Panel
+    // Closes all list views when closing the Panel
     Connections {
         function onIsExpandedChanged() {
             if (!pill.isExpanded) {
-               // Add Future Modules Here
+                // Add Future Modules Here
             }
         }
         target: pill
@@ -31,5 +28,30 @@ Item {
     Header {
         id: header
         pill: panelContent.pill
-    }    
+    }
+
+    // Volume + Brightness sliders
+    ColumnLayout {
+        anchors.top: header.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
+        anchors.topMargin: 16
+        spacing: 10
+
+        PanelSlider {
+            Layout.fillWidth: true
+            value: Audio.volume
+            icon: AudioHelpers.volumeIcon(Audio.volume, Audio.muted)
+            onMoved: (v) => Audio.setVolume(v)
+        }
+
+        PanelSlider {
+            Layout.fillWidth: true
+            value: Backlight.value
+            icon: BrightnessHelpers.icon(Backlight.value)
+            onMoved: (v) => Backlight.setPercent(v * 100)
+        }
+    }
 }

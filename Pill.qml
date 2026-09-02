@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell.Io
 import QtQuick.Effects
 import qs.Components
+import qs.Utils
 
 
 Item {
@@ -121,7 +122,7 @@ Item {
     }
 
     Connections {
-        target: volumeComp
+        target: Audio
         function onChanged() {
             if (root.isExpanded) return
             root.pillContent = "volume"
@@ -130,7 +131,7 @@ Item {
     }
 
     Connections {
-        target: brightnessComp
+        target: Backlight
         function onChanged() {
             if (root.isExpanded || brightnessRevertGuard.running) return
             root.pillContent = "brightness"
