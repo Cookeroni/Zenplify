@@ -9,10 +9,10 @@ Item {
 
     property real value: 0                 // 0..1, driven by the service
     property string icon: ""
-    property color fillColor: Theme.success
+    property color fillColor: Theme.textPrimary
     signal moved(real value)               // user dragged; fraction 0..1
 
-    implicitHeight: 40
+    implicitHeight: 28
 
     readonly property real _frac: Math.min(Math.max(root.value, 0), 1)
     // Track the finger 1:1 while dragging; otherwise follow the service value.
