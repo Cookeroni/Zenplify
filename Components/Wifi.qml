@@ -19,6 +19,9 @@ Item {
     property bool showList: false
     property bool tileHidden: false
 
+    property string connectingSsid: ""   // network we're actively authenticating
+    property string connectError: ""     // ssid whose last connect attempt failed
+
     implicitWidth: tileView.width
     implicitHeight: tileView.height
 
@@ -101,7 +104,15 @@ Item {
         id: connectProc
 
         onExited: (code, status) => {
-            root.pendingSsid = "";
+            const ssid = root.connectingSsid;
+            root.connectingSsid = "";
+            if (ssid !== "" && code !== 0) {
+                // Connect/auth failed (e.g. wrong password) — keep the row open.
+                root.connectError = ssid;
+            } else {
+                root.connectError = "";
+                root.pendingSsid = "";
+            }
             WifiUtils.refresh(radioProc, listProc, profilesProc);
         }
     }
@@ -291,7 +302,8 @@ Item {
 
                     property bool pwReveal: false
                     required property var modelData
-                    readonly property bool expanded: root.pendingSsid === modelData.ssid
+                    readonly property bool connecting: root.connectingSsid === modelData.ssid
+                    readonly property bool expanded: root.pendingSsid === modelData.ssid || connecting
                     readonly property bool saved: WifiUtils.isSaved(root.savedSsids, modelData.ssid)
                     readonly property bool secured: modelData.security && modelData.security !== ""
 
@@ -349,7 +361,9 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 10
                                     font.bold: true
-                                    text: modelData.inUse ? "Connected" : (modelData.security && modelData.security !== "" ? "Secured" : "Open")
+                                    text: (root.connectError === modelData.ssid) ? "Wrong password"
+                                        : modelData.inUse ? "Connected"
+                                        : (modelData.security && modelData.security !== "" ? "Secured" : "Open")
                                 }
                             }
 
@@ -364,6 +378,7 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
+                            enabled: !row.connecting
 
                             onClicked: {
                                 if (row.expanded) {            // tap again to collapse
@@ -371,11 +386,13 @@ Item {
                                 } else if (row.modelData.inUse) {
                                     root.pendingSsid = row.modelData.ssid;   // show options
                                 } else if (row.saved) {
-                                    WifiUtils.connectKnown(connectProc, row.modelData.ssid);   // no password!
+                                    root.connectingSsid = row.modelData.ssid; // no password!
+                                    WifiUtils.connectKnown(connectProc, row.modelData.ssid);
                                 } else if (row.secured) {
                                     root.pendingSsid = row.modelData.ssid;   // ask password
                                 } else {
-                                    WifiUtils.connectOpen(connectProc, row.modelData.ssid);    // open network
+                                    root.connectingSsid = row.modelData.ssid; // open network
+                                    WifiUtils.connectOpen(connectProc, row.modelData.ssid);
                                 }
                             }
                         }
@@ -393,7 +410,7 @@ Item {
                         }
                         height: 36
                         spacing: 8
-                        visible: row.modelData.inUse
+                        visible: row.modelData.inUse && !row.connecting
 
                         // Disconnect
                         Rectangle {
@@ -465,7 +482,7 @@ Item {
                         }
                         height: 36
                         spacing: 8
-                        visible: !row.modelData.inUse && row.secured
+                        visible: !row.modelData.inUse && row.secured && !row.connecting
 
                         TextField {
                             id: pwField
@@ -483,9 +500,17 @@ Item {
                             background: Rectangle {
                                 color: Theme.panelScrim
                                 radius: 8
+                                border.width: (root.connectError === row.modelData.ssid) ? 1 : 0
+                                border.color: Theme.danger
                             }
 
-                            onAccepted: WifiUtils.connectSecured(connectProc, row.modelData.ssid, text)                           
+                            onTextEdited: root.connectError = ""
+                            onAccepted: {
+                                if (text.length === 0) return;
+                                root.connectError = "";
+                                root.connectingSsid = row.modelData.ssid;
+                                WifiUtils.connectSecured(connectProc, row.modelData.ssid, text);
+                            }                           
                         }
 
                         // Eye Icon
@@ -527,7 +552,63 @@ Item {
                             }
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: WifiUtils.connectSecured(connectProc, row.modelData.ssid, pwField.text)
+                                onClicked: {
+                                    if (pwField.text.length === 0) return;
+                                    root.connectError = "";
+                                    root.connectingSsid = row.modelData.ssid;
+                                    WifiUtils.connectSecured(connectProc, row.modelData.ssid, pwField.text);
+                                }
+                            }
+                        }
+                    }
+
+                    // Connecting indicator: indeterminate bar sweeps while authenticating.
+                    Item {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: infoRow.bottom
+                            topMargin: 4
+                            leftMargin: 14
+                            rightMargin: 14
+                        }
+                        height: 36
+                        visible: row.connecting
+
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 10
+
+                            Rectangle {
+                                id: connTrack
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 6
+                                radius: height / 2
+                                color: Theme.bgAccent
+                                clip: true
+
+                                Rectangle {
+                                    width: connTrack.width * 0.35
+                                    height: parent.height
+                                    radius: parent.radius
+                                    color: Theme.success
+
+                                    NumberAnimation on x {
+                                        running: row.connecting
+                                        loops: Animation.Infinite
+                                        from: -connTrack.width * 0.35
+                                        to: connTrack.width
+                                        duration: 900
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: "Connecting…"
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
                             }
                         }
                     }
