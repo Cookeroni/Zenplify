@@ -30,6 +30,9 @@ Item {
                                 : implicitHeight    
 
 
+    // True while a scan is running and we have nothing to show yet.
+    readonly property bool showSkeleton: wifiEnabled && scanning && networks.length === 0
+
     readonly property int currentSignal: {
         for(let i = 0; i < networks.length; i++) {
             if(networks[i].inUse) return networks[i].signal;
@@ -288,6 +291,24 @@ Item {
                 }
             }
 
+            // ---- Scanning skeleton ----
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 8
+                visible: root.showSkeleton
+
+                Repeater {
+                    model: 5
+                    delegate: SkeletonRow {
+                        Layout.fillWidth: true
+                        animate: root.showSkeleton
+                    }
+                }
+
+                Item { Layout.fillWidth: true; Layout.fillHeight: true }
+            }
+
             // ---- Network list ----
             ListView {
                 Layout.fillHeight: true
@@ -295,7 +316,7 @@ Item {
                 clip: true
                 model: root.networks
                 // spacing: 6
-                visible: root.wifiEnabled
+                visible: root.wifiEnabled && !root.showSkeleton
 
                 delegate: Rectangle {
                     id: row
@@ -562,7 +583,7 @@ Item {
                         }
                     }
 
-                    // Connecting indicator: indeterminate bar sweeps while authenticating.
+                    // Connecting indicator: soft shimmer sweeps while authenticating.
                     Item {
                         anchors {
                             left: parent.left
@@ -588,17 +609,23 @@ Item {
                                 clip: true
 
                                 Rectangle {
-                                    width: connTrack.width * 0.35
+                                    id: connShimmer
                                     height: parent.height
-                                    radius: parent.radius
-                                    color: Theme.success
+                                    width: parent.width * 0.5
+
+                                    gradient: Gradient {
+                                        orientation: Gradient.Horizontal
+                                        GradientStop { position: 0.0; color: "transparent" }
+                                        GradientStop { position: 0.5; color: Theme.success }
+                                        GradientStop { position: 1.0; color: "transparent" }
+                                    }
 
                                     NumberAnimation on x {
                                         running: row.connecting
                                         loops: Animation.Infinite
-                                        from: -connTrack.width * 0.35
+                                        from: -connShimmer.width
                                         to: connTrack.width
-                                        duration: 900
+                                        duration: 1100
                                         easing.type: Easing.InOutQuad
                                     }
                                 }
