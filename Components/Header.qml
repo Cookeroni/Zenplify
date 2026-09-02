@@ -97,5 +97,42 @@ Item {
                 precision: SystemClock.Hours
             }
         }
+
+        // Rescan (Spins while scanning)
+        Rectangle {
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: 30
+            Layout.preferredHeight: 30
+            color: Theme.panelScrim
+            radius: 15
+            visible: wifi.showList 
+
+            // Icon
+            Text {
+                anchors { centerIn: parent }
+                color: Theme.textPrimary
+                text: "󰑐"
+
+                font {
+                    pixelSize: 15
+                    family: Theme.fontFamily
+                }
+
+                transformOrigin: Item.Center
+
+                RotationAnimator on rotation {
+                    duration: 900
+                    from: 0
+                    loops: Animation.Infinite
+                    running: wifi.scanning
+                    to: 360
+                }
+
+                MouseArea {
+                    anchors { fill: parent }
+                    onClicked: wifi.showList ? wifi.rescan() : ""
+                }
+            }
+        }
     }
 }
