@@ -16,7 +16,7 @@ Item {
 
         Text {
             text: BrightnessHelpers.icon(Backlight.value)
-            color: Theme.lampOn
+            color: Theme.textPrimary
             font.family: Theme.fontFamily
             font.pixelSize: 16
         }
@@ -31,7 +31,7 @@ Item {
                 width: parent.width * Backlight.value
                 height: parent.height
                 radius: parent.radius
-                color: Theme.lampOn
+                color: Theme.textPrimary
                 Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
             }
         }
