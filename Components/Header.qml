@@ -7,7 +7,8 @@ import qs
 Item {
     property var pill
     property var wifi
-    property bool listOpen: !wifi.showList
+    property var bt
+    property bool listOpen: !(wifi.showList || bt.showList)
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -54,6 +55,9 @@ Item {
                     if (wifi.showList) {
                         wifi.showList = false
                         wifi.pendingSsid = ""
+                    } else if (bt.showList) {
+                        bt.showList = false
+                        bt.pendingMac = ""
                     }else {
                         pill.isExpanded = false // Close Panel
                     }
@@ -70,7 +74,8 @@ Item {
             color: Theme.textPrimary
             elide: Text.ElideRight
 
-             text: (wifi.showList) ? "Wi-Fi" : "Control Panel"
+             text: (wifi.showList) ? "Wi-Fi" 
+                 : (bt.showList) ? "Bluetooth" : "Control Panel"
 
             font {
                 bold: true
@@ -105,7 +110,7 @@ Item {
             Layout.preferredHeight: 30
             color: Theme.panelScrim
             radius: 15
-            visible: wifi.showList 
+            visible: wifi.showList || bt.showList
 
             // Icon
             Text {
@@ -124,13 +129,13 @@ Item {
                     duration: 900
                     from: 0
                     loops: Animation.Infinite
-                    running: wifi.scanning
+                    running: wifi.showList ? wifi.scanning : bt.showList ? bt.scanning : false
                     to: 360
                 }
 
                 MouseArea {
                     anchors { fill: parent }
-                    onClicked: wifi.showList ? wifi.rescan() : ""
+                    onClicked: wifi.showList ? wifi.rescan() : bt.showList ? bt.startScan() : ""
                 }
             }
         }
@@ -142,7 +147,7 @@ Item {
             Layout.preferredHeight: 26
             color: Theme.panelScrim
             radius: 13
-            visible: wifi.showList 
+            visible: wifi.showList || bt.showList
 
             Behavior on color {
                 ColorAnimation {
@@ -152,12 +157,14 @@ Item {
 
             Rectangle {
                 anchors { verticalCenter: parent.verticalCenter }
-                color: (wifi.wifiEnabled && wifi.showList) ? Theme.textPrimary : Theme.textSecondary
+                color: (wifi.wifiEnabled && wifi.showList) || (bt.powered && bt.showList) 
+                     ? Theme.textPrimary : Theme.textSecondary
 
                 height: 20
                 radius: 10
                 width: 20
-                x: wifi.wifiEnabled && wifi.showList ? parent.width - width - 3 : 3
+                x: (wifi.wifiEnabled && wifi.showList) ? parent.width - width - 3 
+                 : (bt.powered && bt.showList) ? parent.width - width - 3 : 3
 
                 Behavior on x {
                     NumberAnimation {

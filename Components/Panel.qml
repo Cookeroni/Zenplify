@@ -21,6 +21,8 @@ Item {
                 // Add Future Modules Here
                 wifiModule.showList = false;
                 wifiModule.pendingSsid = "";
+                bluetoothModule.showList = false;
+                bluetoothModule.pendingMac = "";
             }
         }
         target: pill
@@ -31,13 +33,27 @@ Item {
         id: header
         pill: panelContent.pill
         wifi: wifiModule
+        bt: bluetoothModule
     }
 
     Wifi {
         id: wifiModule
+        tileHidden: bluetoothModule.showList 
         anchors {
             left: parent.left
             leftMargin: 12
+            top: header.bottom
+            topMargin: 20
+        }
+    }
+
+    Bluetooth {
+        id: bluetoothModule
+        tileHidden: wifiModule.showList 
+
+        anchors {
+            left: bluetoothModule.showList ? parent.left : wifiModule.right
+            leftMargin: 8
             top: header.bottom
             topMargin: 20
         }
@@ -52,6 +68,7 @@ Item {
         anchors.rightMargin: 16
         anchors.topMargin: 16
         spacing: 10
+        visible: !(wifiModule.showList || bluetoothModule.showList)
 
         PanelSlider {
             Layout.fillWidth: true
