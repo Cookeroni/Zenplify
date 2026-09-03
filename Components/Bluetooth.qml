@@ -18,10 +18,16 @@ Item {
     property string pendingMac: ""
     property var devices: []
 
+    property string connectingMac: ""   // device we're actively connecting/pairing
+    property string connectError: ""    // mac whose last attempt failed
+
     implicitWidth: tileView.width
     implicitHeight: tileView.height
     width: root.showList ? parent.width : implicitWidth 
     height: root.showList ? parent.height - root.y - 10 : implicitHeight 
+
+    // True while a scan is running and we have nothing to show yet.
+    readonly property bool showSkeleton: powered && scanning && devices.length === 0
 
     readonly property string tileIcon: {
         return (!powered) ? "󰂲" : (connectedName.length > 0) ? "󰂱" : "󰂯"
@@ -63,7 +69,15 @@ Item {
     Process {
         id: actionProc
         onExited: (code, status) => {
-            root.pendingMac = "";
+            const mac = root.connectingMac;
+            root.connectingMac = "";
+            if (mac !== "" && code !== 0) {
+                // Connect/pair failed — keep the row so the user can retry.
+                root.connectError = mac;
+            } else {
+                root.connectError = "";
+                root.pendingMac = "";
+            }
             BluetoothUtils.refresh(infoProc);
         }
     }
@@ -193,20 +207,39 @@ Item {
                 }
             }
 
+            // ---- Scanning skeleton ----
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 8
+                visible: root.showSkeleton
+
+                Repeater {
+                    model: 5
+                    delegate: SkeletonRow {
+                        Layout.fillWidth: true
+                        animate: root.showSkeleton
+                    }
+                }
+
+                Item { Layout.fillWidth: true; Layout.fillHeight: true }
+            }
+
             // Device List
             ListView{
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
                 model: root.devices
-                visible: root.powered
+                visible: root.powered && !root.showSkeleton
 
                 delegate: Rectangle {
                     id: row
 
                     required property var modelData
                     readonly property bool known: modelData.connected || modelData.paired
-                    readonly property bool expanded: root.pendingMac === modelData.mac
+                    readonly property bool connecting: root.connectingMac === modelData.mac
+                    readonly property bool expanded: root.pendingMac === modelData.mac || connecting
 
                     clip: true
                     color: modelData.connected ? Theme.panelScrim : Theme.bgAccent
@@ -276,28 +309,31 @@ Item {
                                 }
                             }
 
-                            // Status
+                            // Status / error
                             Text {
-                                visible: row.modelData.connected
-                                color: Theme.success
+                                visible: !row.connecting && (row.modelData.connected || root.connectError === row.modelData.mac)
+                                color: (root.connectError === row.modelData.mac) ? Theme.danger : Theme.success
 
                                 font {
                                     family: Theme.fontFamily
-                                    pixelSize: 15
+                                    pixelSize: (root.connectError === row.modelData.mac) ? 11 : 15
                                 }
-                                text: "󰄬"
+                                text: (root.connectError === row.modelData.mac) ? "Failed" : "󰄬"
 
                             }
                         }
 
                         MouseArea {
                             anchors { fill: parent }
+                            enabled: !row.connecting
                             onClicked: {
+                                root.connectError = "";
                                 if (row.expanded) {
                                     root.pendingMac = "";
                                 } else if (row.known) {
                                     root.pendingMac = row.modelData.mac;   // show options
                                 } else {
+                                    root.connectingMac = row.modelData.mac;
                                     BluetoothUtils.pairDev(actionProc, row.modelData.mac);       // discovered -> pair
                                 }
                             }
@@ -316,7 +352,7 @@ Item {
                         }
                         height: 36
                         spacing: 8
-                        visible: row.expanded
+                        visible: row.expanded && !row.connecting
 
                         // Disconnect/Connect
                         Rectangle {
@@ -341,11 +377,14 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    if (row.modelData.connected)
-                                        BluetoothUtils.disconnectDev(actionProc,row.modelData.mac);
-                                    else
-                                        BluetoothUtils.connectDev(actionProc,row.modelData.mac);
-                                    root.pendingMac = "";
+                                    if (row.modelData.connected) {
+                                        BluetoothUtils.disconnectDev(actionProc, row.modelData.mac);
+                                        root.pendingMac = "";
+                                    } else {
+                                        root.connectError = "";
+                                        root.connectingMac = row.modelData.mac;
+                                        BluetoothUtils.connectDev(actionProc, row.modelData.mac);
+                                    }
                                 }
                             }
                         }
@@ -379,6 +418,63 @@ Item {
                             }
                         }
 
+                    }
+
+                    // Connecting indicator: soft shimmer sweeps while connecting/pairing.
+                    Item {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: infoRow.bottom
+                            topMargin: 4
+                            leftMargin: 14
+                            rightMargin: 14
+                        }
+                        height: 36
+                        visible: row.connecting
+
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 10
+
+                            Rectangle {
+                                id: connTrack
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 6
+                                radius: height / 2
+                                color: Theme.bgAccent
+                                clip: true
+
+                                Rectangle {
+                                    id: connShimmer
+                                    height: parent.height
+                                    width: parent.width * 0.5
+
+                                    gradient: Gradient {
+                                        orientation: Gradient.Horizontal
+                                        GradientStop { position: 0.0; color: "transparent" }
+                                        GradientStop { position: 0.5; color: Theme.success }
+                                        GradientStop { position: 1.0; color: "transparent" }
+                                    }
+
+                                    NumberAnimation on x {
+                                        running: row.connecting
+                                        loops: Animation.Infinite
+                                        from: -connShimmer.width
+                                        to: connTrack.width
+                                        duration: 1100
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: row.known ? "Connecting…" : "Pairing…"
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
                     }
 
                     Behavior on height {
