@@ -100,6 +100,19 @@ Item {
         }
     }
 
+    Nightlight {
+        id: nightModule
+
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+
+        anchors {
+            left: dndModule.right
+            leftMargin: 8
+            top: bluetoothModule.bottom
+            topMargin: 10
+        }
+    }
+
     // Volume + Brightness sliders
     ColumnLayout {
         anchors.top: batteryModule.bottom
