@@ -25,6 +25,7 @@ Item {
                 bluetoothModule.pendingMac = "";
                 audioModule.showList = false;
                 batteryModule.showList = false;
+                clipboardModule.showList = false;
             }
         }
         target: pill
@@ -38,11 +39,12 @@ Item {
         bt: bluetoothModule
         audioSink: audioModule
         batt: batteryModule
+        clipb: clipboardModule
     }
 
     Wifi {
         id: wifiModule
-        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList
+        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
         anchors {
             left: parent.left
             leftMargin: 12
@@ -53,7 +55,7 @@ Item {
 
     Bluetooth {
         id: bluetoothModule
-        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList
+        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
 
         anchors {
             left: bluetoothModule.showList ? parent.left : wifiModule.right
@@ -65,7 +67,7 @@ Item {
 
     AudioSink {
         id: audioModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList || clipboardModule.showList
 
         anchors {
             left: audioModule.showList ? parent.left : bluetoothModule.right
@@ -77,7 +79,7 @@ Item {
 
     Battery {
         id: batteryModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList
 
         anchors {
             left: parent.left
@@ -89,8 +91,7 @@ Item {
 
     Dnd {
         id: dndModule
-
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
 
         anchors {
             left: batteryModule.right
@@ -103,12 +104,24 @@ Item {
     Nightlight {
         id: nightModule
 
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
 
         anchors {
             left: dndModule.right
             leftMargin: 8
             top: bluetoothModule.bottom
+            topMargin: 10
+        }
+    }
+
+    Clipboard {
+        id: clipboardModule
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+
+        anchors {
+            left: clipboardModule.showList ? parent.left : nightModule.right
+            leftMargin: 8
+            top: clipboardModule.showList ? header.bottom : wifiModule.bottom
             topMargin: 10
         }
     }
@@ -122,7 +135,7 @@ Item {
         anchors.rightMargin: 16
         anchors.topMargin: 16
         spacing: 10
-        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList)
+        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList)
 
         PanelSlider {
             Layout.fillWidth: true

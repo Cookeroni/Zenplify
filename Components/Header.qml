@@ -10,7 +10,8 @@ Item {
     property var bt
     property var audioSink
     property var batt
-    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList)
+    property var clipb
+    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList || clipb.showList)
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -64,6 +65,8 @@ Item {
                         audioSink.showList = false
                     } else if (batt.showList) {
                         batt.showList = false
+                    } else if (clipb.showList) {
+                        clipb.showList = false
                     }else {
                         pill.isExpanded = false // Close Panel
                     }
@@ -83,12 +86,99 @@ Item {
              text: (wifi.showList) ? "Wi-Fi" 
                  : (bt.showList) ? "Bluetooth" 
                  : (audioSink.showList) ? "Audio Sink" 
-                 : (batt.showList) ? "Battery" : "Control Panel"
+                 : (batt.showList) ? "Battery" 
+                 : (clipb.showList) ? "Clipboard" : "Control Panel"
 
             font {
                 bold: true
                 family: Theme.fontFamily
                 pixelSize: 20
+            }
+        }
+
+        // Clipboard Clear All Button (two-stage confirm)
+        Rectangle {
+            id: clearBtn
+
+            property bool armed: false
+
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: armed ? 92 : 30
+            Layout.preferredHeight: 30
+            color: armed ? Theme.danger
+                         : (clearArea.containsMouse ? Theme.panelScrim : "transparent")
+            radius: 15
+            visible: clipb.showList
+
+            // Disarm whenever the clipboard view closes, so it never lingers armed
+            Connections {
+                target: clipb
+                function onShowListChanged() {
+                    if (!clipb.showList)
+                        clearBtn.armed = false;
+                }
+            }
+
+            Behavior on color {
+                ColorAnimation { duration: 160 }
+            }
+
+            Behavior on Layout.preferredWidth {
+                NumberAnimation { duration: 160; easing.type: Easing.OutQuad }
+            }
+
+            // Auto-disarm if the second click doesn't come in time
+            Timer {
+                id: armTimer
+                interval: 3000
+                onTriggered: clearBtn.armed = false
+            }
+
+            RowLayout {
+                anchors { centerIn: parent }
+                spacing: 5
+
+                Text {
+                    color: clearBtn.armed
+                           ? Theme.textAccent
+                           : (clearArea.containsMouse ? Theme.danger : Theme.textPrimary)
+                    text: "󰩹"   // md-trash-can-outline
+
+                    font {
+                        pixelSize: 16
+                        family: Theme.fontFamily
+                    }
+                }
+
+                // "Sure?" label, only while armed
+                Text {
+                    visible: clearBtn.armed
+                    color: Theme.textAccent
+                    text: "Sure?"
+
+                    font {
+                        pixelSize: 15
+                        family: Theme.fontFamily
+                        bold: true
+                    }
+                }
+            }
+
+            MouseArea {
+                id: clearArea
+                anchors { fill: parent }
+                hoverEnabled: true
+
+                onClicked: {
+                    if (clearBtn.armed) {
+                        clearBtn.armed = false;
+                        armTimer.stop();
+                        clipb.clearAll();
+                    } else {
+                        clearBtn.armed = true;
+                        armTimer.restart();
+                    }
+                }
             }
         }
 
