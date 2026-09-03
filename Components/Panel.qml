@@ -87,6 +87,19 @@ Item {
         }
     }
 
+    Dnd {
+        id: dndModule
+
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+
+        anchors {
+            left: batteryModule.right
+            leftMargin: 8
+            top: bluetoothModule.bottom
+            topMargin: 10
+        }
+    }
+
     // Volume + Brightness sliders
     ColumnLayout {
         anchors.top: batteryModule.bottom
