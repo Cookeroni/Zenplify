@@ -2,7 +2,7 @@ function refresh(infoProc) {
     infoProc.running = true;
 }
 
-function startScan(powered, scanning, scanProc) {
+function startScan(root, scanProc) {
     if (!root.powered) return;
     root.scanning = true;
     scanProc.running = true;
@@ -40,7 +40,7 @@ function iconFor(connected) {
 }
 
 // Parse one batch of `bluetoothctl` output (sections split by markers).
-function parseInfo(devices,connectedName,text) {
+function parseInfo(root, text) {
     const lines = text.split("\n");
     const sec = ({ show: [], all: [], conn: [], pair: [] });
     let cur = "";

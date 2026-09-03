@@ -10,8 +10,6 @@ import "../Utils/btHelpers.js" as BluetoothUtils
 Item {
     id: root
 
-    Layout.fillWidth: true
-
     property bool tileHidden: false
     property bool showList: false
     property bool powered: true
@@ -33,7 +31,7 @@ Item {
         return (!powered) ? "Off" : (connectedName.length > 0) ? connectedName : "On/Stand-By"
     }
 
-    function startScan() { BluetoothUtils.startScan(powered, scanning, scanProc) }
+    function startScan() { BluetoothUtils.startScan(root, scanProc) }
     function setPower() { BluetoothUtils.setPower(actionProc, !root.powered) }
 
     // Initial load so the tile is populated before it's opened.
@@ -48,7 +46,7 @@ Item {
             + "echo '##PAIR##'; bluetoothctl devices Paired"]
         stdout: StdioCollector {
             id: infoOut
-            onStreamFinished: BluetoothUtils.parseInfo(devices,connectedName,infoOut.text)
+            onStreamFinished: BluetoothUtils.parseInfo(root, infoOut.text)
         }
     }
 
@@ -101,7 +99,7 @@ Item {
             onClicked: {
                 root.showList = true;
                 BluetoothUtils.refresh(infoProc);
-                BluetoothUtils.startScan(powered, scanning, scanProc);
+                BluetoothUtils.startScan(root, scanProc);
             }
         }
 
