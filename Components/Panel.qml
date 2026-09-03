@@ -24,6 +24,7 @@ Item {
                 bluetoothModule.showList = false;
                 bluetoothModule.pendingMac = "";
                 audioModule.showList = false;
+                batteryModule.showList = false;
             }
         }
         target: pill
@@ -36,11 +37,12 @@ Item {
         wifi: wifiModule
         bt: bluetoothModule
         audioSink: audioModule
+        batt: batteryModule
     }
 
     Wifi {
         id: wifiModule
-        tileHidden: bluetoothModule.showList 
+        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList
         anchors {
             left: parent.left
             leftMargin: 12
@@ -51,7 +53,7 @@ Item {
 
     Bluetooth {
         id: bluetoothModule
-        tileHidden: wifiModule.showList 
+        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList
 
         anchors {
             left: bluetoothModule.showList ? parent.left : wifiModule.right
@@ -63,7 +65,7 @@ Item {
 
     AudioSink {
         id: audioModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList
 
         anchors {
             left: audioModule.showList ? parent.left : bluetoothModule.right
@@ -73,9 +75,21 @@ Item {
         }
     }
 
+    Battery {
+        id: batteryModule
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList
+
+        anchors {
+            left: parent.left
+            leftMargin: 12
+            top: batteryModule.showList ? header.bottom : wifiModule.bottom
+            topMargin: 10
+        }
+    }
+
     // Volume + Brightness sliders
     ColumnLayout {
-        anchors.top: wifiModule.bottom
+        anchors.top: batteryModule.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: 16

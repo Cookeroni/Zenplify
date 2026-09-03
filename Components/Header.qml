@@ -9,7 +9,8 @@ Item {
     property var wifi
     property var bt
     property var audioSink
-    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList)
+    property var batt
+    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList)
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -61,6 +62,8 @@ Item {
                         bt.pendingMac = ""
                     } else if (audioSink.showList) {
                         audioSink.showList = false
+                    } else if (batt.showList) {
+                        batt.showList = false
                     }else {
                         pill.isExpanded = false // Close Panel
                     }
@@ -79,7 +82,8 @@ Item {
 
              text: (wifi.showList) ? "Wi-Fi" 
                  : (bt.showList) ? "Bluetooth" 
-                 : (audioSink.showList) ? "Audio Sink" : "Control Panel"
+                 : (audioSink.showList) ? "Audio Sink" 
+                 : (batt.showList) ? "Battery" : "Control Panel"
 
             font {
                 bold: true
