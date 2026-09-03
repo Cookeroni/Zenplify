@@ -12,7 +12,7 @@ Rectangle {
     // True when mako's "do-not-disturb" mode is active. Sourced from mako,
     property bool dnd: false
 
-    implicitWidth: 125
+    implicitWidth: 120
     implicitHeight: 50
     radius: 8
     color: Theme.panelScrim

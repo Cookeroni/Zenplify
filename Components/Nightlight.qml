@@ -31,7 +31,7 @@ Item {
     Rectangle {
         id: tileView
 
-        width: 95
+        width: 90
         height: 50
         radius: 8
         visible: root.tileHidden ? false : true
