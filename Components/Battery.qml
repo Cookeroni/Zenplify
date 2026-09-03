@@ -13,17 +13,14 @@ Item {
     property bool tileHidden: false
 
     property var battery: UPower.displayDevice
-    property string currentState: battery.state.toString()
-    property bool charging: currentState === UPowerDeviceState.Charging.toString()
-    property bool discharging: currentState === UPowerDeviceState.Discharging.toString()
-    property bool full: currentState === UPowerDeviceState.FullyCharged.toString()
+    property bool charging:    battery.state === UPowerDeviceState.Charging
+    property bool discharging: battery.state === UPowerDeviceState.Discharging
+    property bool full:        battery.state === UPowerDeviceState.FullyCharged
 
     property real barFraction: battery.energyCapacity > 0 ? battery.percentage : 0
      
     readonly property int level: Math.round(battery.percentage * 100)
-    readonly property color levelColor: charging ? Theme.charging 
-                                      : (level <= 10) ? Theme.danger : (level < 50) 
-                                      ? Theme.warning : Theme.success
+    readonly property color levelColor: BatUtils.levelColorFor(battery.percentage, charging)
 
     readonly property string icon: {
         return (charging) ? "󰂄" : (level >= 100) ? "󰁹" 
@@ -119,12 +116,9 @@ Item {
 
                     // Inject the color directly around the percentage part
                     text: {
-                        // Put color logic into a temporary variable
-                        let levelColor = (charging) ? Theme.charging : (level < 50 && level > 10) ? Theme.warning : (level <= 10) ? Theme.danger : Theme.success;
-
                         // Wrap the percentage in a font color tag
                         return UPowerDeviceState.toString(root.battery.state) + " (<font color='" + levelColor + "'>" + root.level + "%</font>)";
-                    }    property string batModel: battery.model
+                    }   
 
                     // Tell QML to read this as HTML/Rich Text
                     textFormat: Text.RichText
