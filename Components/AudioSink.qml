@@ -9,8 +9,6 @@ import "../Utils/audioHelpers.js" as AudioUtils
 Item {
     id: root
 
-    Layout.fillWidth: true
-
     implicitWidth: tileView.width
     implicitHeight: tileView.height
     width: root.showList ? parent.width : implicitWidth 
@@ -141,7 +139,7 @@ Item {
                         pixelSize: 20
                     }
 
-                    text: "No Audio Outputds Found"
+                    text: "No Audio Outputs Found"
                 }
             }
 
@@ -158,13 +156,12 @@ Item {
                     id: srow
 
                     required property var modelData
-                    readonly property bool selected: AudioUtils.isCurrent(modelData)
+                    readonly property bool selected: AudioUtils.isCurrent(root.current, modelData)
 
                     width: ListView.view.width
                     height: 56
                     radius: 12
                     color: Theme.panelScrim
-                    border.width: 1
 
                     RowLayout {
                         anchors {

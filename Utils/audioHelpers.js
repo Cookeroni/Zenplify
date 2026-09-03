@@ -76,8 +76,8 @@ function deviceProp(n, key) {
     return "";
 }
 
-function isCurrent(n) {
-    return n && root.current && n.id === root.current.id;
+function isCurrent(current, n) {
+    return n && current && n.id === current.id;
 }
 
 function volumePercent(volume) {
