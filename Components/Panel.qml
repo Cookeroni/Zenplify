@@ -135,7 +135,7 @@ Item {
         anchors.rightMargin: 16
         anchors.topMargin: 16
         spacing: 10
-        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList)
+        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList)
 
         PanelSlider {
             Layout.fillWidth: true

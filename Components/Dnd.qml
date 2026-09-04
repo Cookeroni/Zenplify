@@ -86,14 +86,6 @@ Rectangle {
                     family: Theme.fontFamily
                     pixelSize: 22
                 }
-
-                // Spin the glyph around the fixed container's center
-                //rotation: root.dnd ? 160 : -40
-
-                Behavior on rotation {
-                    NumberAnimation { duration: 200 }
-                }
-
                 text: "󰚀"
             }
         }
