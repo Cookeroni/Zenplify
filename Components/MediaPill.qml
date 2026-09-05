@@ -22,10 +22,11 @@ Item {
 
         Text {
             Layout.fillWidth: true
+            Layout.bottomMargin: 2
             text: Player.title
             color: Theme.textPrimary
             font.family: Theme.fontFamily
-            font.pixelSize: 13
+            font.pixelSize: 15
             elide: Text.ElideRight
         }
     }
