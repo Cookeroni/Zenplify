@@ -182,22 +182,38 @@ Item {
             }
         }
 
-        // Display Date
-        Text {
+        // Display Time + Date
+        Column {
             visible: listOpen
-            color: Theme.textPrimary
-            text: Qt.formatDateTime(clockDate.date, "dddd, MMMM, d, yyyy")
-            Layout.alignment: Qt.AlignBaseline
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+            spacing: 5
 
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignRight
+                text: Qt.formatDateTime(clockDate.date, "h:mm A")
+                color: Theme.textPrimary
+                font {
+                    pixelSize: 18
+                    family: Theme.fontFamily
+                }
+            }
 
-            font {
-                pixelSize: 12
-                family: Theme.fontFamily
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignRight
+                text: Qt.formatDateTime(clockDate.date, "dddd, MMMM, d, yyyy")
+                color: Theme.textSecondary
+                font {
+                    pixelSize: 12
+                    family: Theme.fontFamily
+                }
             }
 
             SystemClock {
                 id: clockDate
-                precision: SystemClock.Hours
+                precision: SystemClock.Minutes
             }
         }
 
