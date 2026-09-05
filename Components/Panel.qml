@@ -128,6 +128,7 @@ Item {
 
     // Volume + Brightness sliders
     ColumnLayout {
+        id: sliders
         anchors.top: batteryModule.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -149,6 +150,20 @@ Item {
             value: Backlight.value
             icon: BrightnessHelpers.icon(Backlight.value)
             onMoved: (v) => Backlight.setPercent(v * 100)
+        }
+    }
+
+    // Now-playing (Spotify) card — pinned to the bottom of the panel
+    MediaPlayer {
+        id: mediaModule
+        visible: Player.hasTrack && !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList)
+        anchors {
+            top: sliders.bottom
+            left: parent.left
+            right: parent.right
+            topMargin: 20
+            leftMargin: 16
+            rightMargin: 16
         }
     }
 }

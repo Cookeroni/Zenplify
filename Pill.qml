@@ -17,6 +17,7 @@ Item {
 
     readonly property Item maskItem: isExpanded ? root : morphPill
     readonly property bool showingProgress: pillContent === "volume" || pillContent === "brightness"
+    readonly property bool showingMedia: pillContent === "clock" && Player.hasTrack
 
     // Pill Geometry (Not Expanded/Bar Mode)
     readonly property int pillH: 32
@@ -30,6 +31,9 @@ Item {
 
     // Widen pill for Volume/Brightness Progress Bar
     readonly property int pillWiden: 200
+
+    // Widen pill for the now-playing (media) view
+    readonly property int pillMediaW: 240
 
     // True only when the panel is open AND a module needs text entry
     readonly property bool needsKeyboard: isExpanded && panel.needsKeyboard  
@@ -47,7 +51,9 @@ Item {
 
         height: root.isExpanded ? root.panelH : root.pillH
         width: root.isExpanded ? root.panelW
-                               : (root.showingProgress ? root.pillWiden : root.pillW)
+                               : root.showingMedia ? root.pillMediaW
+                               : root.showingProgress ? root.pillWiden
+                               : root.pillW
         
         radius: root.isExpanded ? root.panelRadius : root.pillRadius
 
@@ -63,7 +69,13 @@ Item {
         Clock {
             id: clockComp
             anchors.centerIn: parent
-            visible: root.pillContent === "clock" && !root.isExpanded && morphPill.height < 50
+            visible: root.pillContent === "clock" && !Player.hasTrack && !root.isExpanded && morphPill.height < 50
+        }
+
+        MediaPill {
+            id: mediaComp
+            anchors.fill: parent
+            visible: root.pillContent === "clock" && Player.hasTrack && !root.isExpanded && morphPill.height < 50
         }
 
         Volume {
