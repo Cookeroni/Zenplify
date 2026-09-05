@@ -110,8 +110,9 @@ Item {
     // cliphist delete only reads the numeric id before the first tab; the
     // preview is ignored, so id + "\t" is all it needs.
     function deleteEntry(entry) {
-        root.pipeToStdin(["cliphist", "delete"],entry.id + "\t");
-    }
+    root.pipeToStdin(["cliphist", "delete"], entry.id + "\t",
+                     function() { listProc.running = true; });
+}
 
     // Clears the entire cliphist database, then refreshes the (now empty) list.
     function clearAll() {
