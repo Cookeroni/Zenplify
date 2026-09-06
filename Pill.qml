@@ -25,7 +25,7 @@ Item {
     readonly property int pillRadius: 20
 
     // Pill Geometry (Expanded/Panel Mode)
-    readonly property int panelH: 420
+    readonly property int panelH: 450
     readonly property int panelW: 490    
     readonly property int panelRadius: 24
 
