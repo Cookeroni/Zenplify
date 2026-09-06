@@ -195,7 +195,7 @@ Item {
                 text: Qt.formatDateTime(clockDate.date, "h:mm A")
                 color: Theme.textPrimary
                 font {
-                    pixelSize: 18
+                    pixelSize: 12
                     family: Theme.fontFamily
                 }
             }
