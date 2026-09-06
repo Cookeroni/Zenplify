@@ -26,6 +26,7 @@ Item {
                 audioModule.showList = false;
                 batteryModule.showList = false;
                 clipboardModule.showList = false;
+                powerMenu.expanded = false;
             }
         }
         target: pill
@@ -134,7 +135,7 @@ Item {
         anchors.right: parent.right
         anchors.leftMargin: 16
         anchors.rightMargin: 16
-        anchors.topMargin: 16
+        anchors.topMargin: 20
         spacing: 10
         visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList)
 
@@ -164,6 +165,18 @@ Item {
             topMargin: 20
             leftMargin: 16
             rightMargin: 16
+        }
+    }
+
+    // Power menu (bottom-left)
+    PowerMenu {
+        id: powerMenu
+        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList)
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
+            leftMargin: 16
+            bottomMargin: 16
         }
     }
 }
