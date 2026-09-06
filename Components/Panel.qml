@@ -1,14 +1,17 @@
 import QtQuick
 import QtQuick.Layouts
+import qs
 import qs.Utils
 import "../Utils/audioHelpers.js" as AudioHelpers
 import "../Utils/brightnessHelpers.js" as BrightnessHelpers
+
 
 Item {
     id: panelContent
 
     property var pill
     property bool needsKeyboard: wifiModule.passwordPrompt
+    property bool showCalendar: false
 
     visible: pill.isExpanded
 
@@ -27,6 +30,7 @@ Item {
                 batteryModule.showList = false;
                 clipboardModule.showList = false;
                 powerMenu.expanded = false;
+                panelContent.showCalendar = false;
             }
         }
         target: pill
@@ -41,6 +45,7 @@ Item {
         audioSink: audioModule
         batt: batteryModule
         clipb: clipboardModule
+        onDateClicked: panelContent.showCalendar = !panelContent.showCalendar
     }
 
     Wifi {
@@ -177,6 +182,45 @@ Item {
             bottom: parent.bottom
             leftMargin: 16
             bottomMargin: 16
+        }
+    }
+
+    // ---- Calendar overlay ----
+    Item {
+        anchors.fill: parent
+        visible: panelContent.showCalendar
+        z: 100
+
+        // Dim + click-away to close
+        Rectangle {
+            anchors.fill: parent
+            color: "#99000000"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: panelContent.showCalendar = false
+            }
+        }
+
+        // Card
+        Rectangle {
+            anchors.centerIn: parent
+            width: 320
+            height: calendar.implicitHeight + 32
+            radius: 16
+            color: Theme.panelScrim
+
+            // Absorb clicks so tapping the card doesn't close it
+            MouseArea { anchors.fill: parent }
+
+            Calendar {
+                id: calendar
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: 16
+                }
+            }
         }
     }
 }

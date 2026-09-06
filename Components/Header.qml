@@ -5,6 +5,9 @@ import Quickshell.Io
 import qs
 
 Item {
+    id: root
+    signal dateClicked()
+
     property var pill
     property var wifi
     property var bt
@@ -182,38 +185,51 @@ Item {
             }
         }
 
-        // Display Time + Date
-        Column {
+        // Display Time + Date (tap for calendar)
+        Item {
+            id: dateBlock
             visible: listOpen
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            spacing: 5
+            implicitWidth: dateCol.implicitWidth
+            implicitHeight: dateCol.implicitHeight
 
-            Text {
-                width: parent.width
-                horizontalAlignment: Text.AlignRight
-                text: Qt.formatDateTime(clockDate.date, "h:mm A")
-                color: Theme.textPrimary
-                font {
-                    pixelSize: 12
-                    family: Theme.fontFamily
+            Column {
+                id: dateCol
+                anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter }
+                spacing: 5
+
+                Text {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignRight
+                    text: Qt.formatDateTime(clockDate.date, "h:mm A")
+                    color: Theme.textPrimary
+                    font {
+                        pixelSize: 12
+                        family: Theme.fontFamily
+                    }
+                }
+
+                Text {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignRight
+                    text: Qt.formatDateTime(clockDate.date, "dddd, MMMM, d, yyyy")
+                    color: Theme.textSecondary
+                    font {
+                        pixelSize: 12
+                        family: Theme.fontFamily
+                    }
+                }
+
+                SystemClock {
+                    id: clockDate
+                    precision: SystemClock.Minutes
                 }
             }
 
-            Text {
-                width: parent.width
-                horizontalAlignment: Text.AlignRight
-                text: Qt.formatDateTime(clockDate.date, "dddd, MMMM, d, yyyy")
-                color: Theme.textSecondary
-                font {
-                    pixelSize: 12
-                    family: Theme.fontFamily
-                }
-            }
-
-            SystemClock {
-                id: clockDate
-                precision: SystemClock.Minutes
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.dateClicked()
             }
         }
 
