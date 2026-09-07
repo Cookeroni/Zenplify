@@ -8,6 +8,7 @@ Singleton {
     readonly property color pillBg:        "#121212"
     readonly property color panelScrim:    "#1C2024"    
     readonly property color bgAccent:      "#08FFFFFF"
+    readonly property color dimScreen:     "#66000000"
 
     readonly property color textPrimary:   "#e3ebec"
     readonly property color textMuted:     "#5d6f73"
