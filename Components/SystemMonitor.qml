@@ -3,8 +3,8 @@ import QtQuick.Layouts
 import qs
 import qs.Utils
 
-// System monitors takeover: bars + numbers for CPU / RAM / swap / disk / temp,
-// plus uptime. Opaque, fills the panel body when shown.
+// System monitors takeover: label + sparkline (rolling history) + number,
+// for CPU / RAM / swap / disk / temp, plus uptime. Fills the panel body.
 Rectangle {
     id: root
 
@@ -37,14 +37,14 @@ Rectangle {
         return t < 60 ? Theme.success : t < 80 ? Theme.warning : Theme.danger;
     }
 
-    // One metric line: label, optional bar, value.
+    // One metric line: label, sparkline (or spacer), value.
     component Metric: RowLayout {
         id: metric
         property string label
-        property real frac: 0
+        property var history: []
         property string value
-        property bool bar: true
-        property color barColor: Theme.success
+        property bool spark: true
+        property color lineColor: Theme.success
 
         Layout.fillWidth: true
         spacing: 12
@@ -56,22 +56,56 @@ Rectangle {
             font { family: Theme.fontFamily; pixelSize: 13 }
         }
 
-        Rectangle {
-            visible: metric.bar
+        // Sparkline
+        Canvas {
+            id: canvas
+            visible: metric.spark
             Layout.fillWidth: true
-            Layout.preferredHeight: 8
-            radius: 4
-            color: Theme.bgAccent
+            Layout.preferredHeight: 26
 
-            Rectangle {
-                width: parent.width * Math.min(Math.max(metric.frac, 0), 1)
-                height: parent.height
-                radius: parent.radius
-                color: metric.barColor
-                Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            property var data: metric.history
+            property color lineColor: metric.lineColor
+
+            onDataChanged: requestPaint()
+            onLineColorChanged: requestPaint()
+            onWidthChanged: requestPaint()
+            onHeightChanged: requestPaint()
+            onVisibleChanged: if (visible) requestPaint()
+
+            onPaint: {
+                const ctx = getContext("2d");
+                ctx.reset();
+                const d = canvas.data || [];
+                const n = d.length;
+                if (n < 2)
+                    return;
+                const w = width, h = height;
+                const sx = w / (n - 1);
+                const yy = (v) => h - Math.min(Math.max(v, 0), 1) * (h - 2) - 1;
+
+                // area fill
+                ctx.beginPath();
+                ctx.moveTo(0, yy(d[0]));
+                for (let i = 1; i < n; i++)
+                    ctx.lineTo(i * sx, yy(d[i]));
+                ctx.lineTo(w, h);
+                ctx.lineTo(0, h);
+                ctx.closePath();
+                ctx.fillStyle = Qt.rgba(canvas.lineColor.r, canvas.lineColor.g, canvas.lineColor.b, 0.16);
+                ctx.fill();
+
+                // line
+                ctx.beginPath();
+                ctx.moveTo(0, yy(d[0]));
+                for (let j = 1; j < n; j++)
+                    ctx.lineTo(j * sx, yy(d[j]));
+                ctx.lineWidth = 1.5;
+                ctx.lineJoin = "round";
+                ctx.strokeStyle = canvas.lineColor;
+                ctx.stroke();
             }
         }
-        Item { visible: !metric.bar; Layout.fillWidth: true }
+        Item { visible: !metric.spark; Layout.fillWidth: true }
 
         Text {
             Layout.preferredWidth: 120
@@ -95,39 +129,39 @@ Rectangle {
 
         Metric {
             label: "CPU"
-            frac: SysInfo.cpu / 100
+            history: SysInfo.cpuHistory
             value: Math.round(SysInfo.cpu) + "%"
-            barColor: root.levelColor(SysInfo.cpu / 100)
+            lineColor: root.levelColor(SysInfo.cpu / 100)
         }
         Metric {
             label: "RAM"
-            frac: SysInfo.ramFrac
+            history: SysInfo.ramHistory
             value: root.fmtBytes(SysInfo.ramUsed) + " / " + root.fmtBytes(SysInfo.ramTotal)
-            barColor: root.levelColor(SysInfo.ramFrac)
+            lineColor: root.levelColor(SysInfo.ramFrac)
         }
         Metric {
             label: "Swap"
-            bar: SysInfo.swapTotal > 0
-            frac: SysInfo.swapFrac
+            spark: SysInfo.swapTotal > 0
+            history: SysInfo.swapHistory
             value: SysInfo.swapTotal > 0 ? (root.fmtBytes(SysInfo.swapUsed) + " / " + root.fmtBytes(SysInfo.swapTotal)) : "off"
-            barColor: root.levelColor(SysInfo.swapFrac)
+            lineColor: root.levelColor(SysInfo.swapFrac)
         }
         Metric {
             label: "Disk"
-            frac: SysInfo.diskFrac
+            history: SysInfo.diskHistory
             value: root.fmtBytes(SysInfo.diskUsed) + " / " + root.fmtBytes(SysInfo.diskTotal)
-            barColor: root.levelColor(SysInfo.diskFrac)
+            lineColor: root.levelColor(SysInfo.diskFrac)
         }
         Metric {
             label: "Temp"
-            bar: SysInfo.hasTemp
-            frac: SysInfo.temp / 100
+            spark: SysInfo.hasTemp
+            history: SysInfo.tempHistory
             value: SysInfo.hasTemp ? (Math.round(SysInfo.temp) + "°C") : "N/A"
-            barColor: root.tempColor(SysInfo.temp)
+            lineColor: root.tempColor(SysInfo.temp)
         }
         Metric {
             label: "Uptime"
-            bar: false
+            spark: false
             value: root.fmtUptime(SysInfo.uptime)
         }
 

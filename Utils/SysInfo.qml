@@ -23,6 +23,21 @@ Singleton {
     readonly property real swapFrac: root.swapTotal > 0 ? root.swapUsed / root.swapTotal : 0
     readonly property real diskFrac: root.diskTotal > 0 ? root.diskUsed / root.diskTotal : 0
 
+    // ---- rolling history (fractions 0..1) for the sparklines ----
+    property int histLen: 60
+    property var cpuHistory: []
+    property var ramHistory: []
+    property var swapHistory: []
+    property var diskHistory: []
+    property var tempHistory: []
+    function _push(arr, v) {
+        var a = arr.slice();
+        a.push(v);
+        while (a.length > root.histLen)
+            a.shift();
+        return a;
+    }
+
     // ---- CPU: /proc/stat, busy fraction between two samples ----
     property real _prevTotal: 0
     property real _prevIdle: 0
@@ -41,6 +56,7 @@ Singleton {
                 root.cpu = Math.max(0, Math.min(100, 100 * (dt - di) / dt));
             root._prevTotal = total;
             root._prevIdle = idle;
+            root.cpuHistory = root._push(root.cpuHistory, root.cpu / 100);
         }
     }
 
@@ -60,6 +76,8 @@ Singleton {
             const swapTotal = kb("SwapTotal");
             root.swapTotal = swapTotal;
             root.swapUsed = Math.max(0, swapTotal - kb("SwapFree"));
+            root.ramHistory = root._push(root.ramHistory, memTotal > 0 ? root.ramUsed / memTotal : 0);
+            root.swapHistory = root._push(root.swapHistory, swapTotal > 0 ? root.swapUsed / swapTotal : 0);
         }
     }
 
@@ -92,6 +110,7 @@ Singleton {
             if (!isNaN(v)) {
                 root.temp = v / 1000;
                 root.hasTemp = true;
+                root.tempHistory = root._push(root.tempHistory, root.temp / 100);
             }
         }
     }
@@ -107,6 +126,7 @@ Singleton {
                     const f = lines[1].trim().split(/\s+/);
                     root.diskTotal = parseInt(f[0]) || 0;
                     root.diskUsed = parseInt(f[1]) || 0;
+                    root.diskHistory = root._push(root.diskHistory, root.diskTotal > 0 ? root.diskUsed / root.diskTotal : 0);
                 }
             }
         }
