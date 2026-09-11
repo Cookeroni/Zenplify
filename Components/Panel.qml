@@ -31,6 +31,7 @@ Item {
                 clipboardModule.showList = false;
                 powerMenu.expanded = false;
                 panelContent.showCalendar = false;
+                systemMonitor.show = false;
             }
         }
         target: pill
@@ -45,12 +46,13 @@ Item {
         audioSink: audioModule
         batt: batteryModule
         clipb: clipboardModule
+        sysmon: systemMonitor
         onDateClicked: panelContent.showCalendar = !panelContent.showCalendar
     }
 
     Wifi {
         id: wifiModule
-        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
+        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
         anchors {
             left: parent.left
             leftMargin: 12
@@ -61,7 +63,7 @@ Item {
 
     Bluetooth {
         id: bluetoothModule
-        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
+        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
 
         anchors {
             left: bluetoothModule.showList ? parent.left : wifiModule.right
@@ -73,7 +75,7 @@ Item {
 
     AudioSink {
         id: audioModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList || clipboardModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
 
         anchors {
             left: audioModule.showList ? parent.left : bluetoothModule.right
@@ -85,7 +87,7 @@ Item {
 
     Battery {
         id: batteryModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || systemMonitor.show
 
         anchors {
             left: parent.left
@@ -97,7 +99,7 @@ Item {
 
     Dnd {
         id: dndModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
 
         anchors {
             left: batteryModule.right
@@ -122,7 +124,7 @@ Item {
 
     Clipboard {
         id: clipboardModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || systemMonitor.show
 
         anchors {
             left: clipboardModule.showList ? parent.left : nightModule.right
@@ -142,7 +144,7 @@ Item {
         anchors.rightMargin: 16
         anchors.topMargin: 20
         spacing: 10
-        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList)
+        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList || systemMonitor.show)
 
         PanelSlider {
             Layout.fillWidth: true
@@ -181,6 +183,51 @@ Item {
             left: parent.left
             bottom: parent.bottom
             leftMargin: 16
+            bottomMargin: 16
+        }
+    }
+
+    // System monitors trigger (bottom-right, mirrors the power menu)
+    Rectangle {
+        id: monitorButton
+        visible: !systemMonitor.show && !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList)
+        width: 40
+        height: 36
+        radius: 18
+        color: Theme.pillBg
+        anchors {
+            right: parent.right
+            bottom: parent.bottom
+            rightMargin: 16
+            bottomMargin: 16
+        }
+
+        Text {
+            anchors.centerIn: parent
+            text: ""
+            color: monBtnMa.containsMouse ? Theme.textPrimary : Theme.textSecondary
+            font { family: Theme.fontFamily; pixelSize: 18 }
+        }
+        MouseArea {
+            id: monBtnMa
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: systemMonitor.show = true
+        }
+    }
+
+    // System monitors takeover — fills the body below the header when shown
+    SystemMonitor {
+        id: systemMonitor
+        z: 50
+        anchors {
+            top: header.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            topMargin: 16
+            leftMargin: 16
+            rightMargin: 16
             bottomMargin: 16
         }
     }

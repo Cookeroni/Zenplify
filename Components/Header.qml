@@ -14,7 +14,8 @@ Item {
     property var audioSink
     property var batt
     property var clipb
-    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList || clipb.showList)
+    property var sysmon
+    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList || clipb.showList || sysmon.show)
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -70,6 +71,8 @@ Item {
                         batt.showList = false
                     } else if (clipb.showList) {
                         clipb.showList = false
+                    } else if (sysmon.show) {
+                        sysmon.show = false
                     }else {
                         pill.isExpanded = false // Close Panel
                     }
@@ -90,7 +93,8 @@ Item {
                  : (bt.showList) ? "Bluetooth" 
                  : (audioSink.showList) ? "Audio Sink" 
                  : (batt.showList) ? "Battery" 
-                 : (clipb.showList) ? "Clipboard" : "Control Panel"
+                 : (clipb.showList) ? "Clipboard" 
+                 : (sysmon.show) ? "System Monitors" : "Control Panel"
 
             font {
                 bold: true
