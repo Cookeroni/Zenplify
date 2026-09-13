@@ -16,7 +16,16 @@ Item {
 
     readonly property real _frac: Math.min(Math.max(root.value, 0), 1)
     // Track the finger 1:1 while dragging; otherwise follow the service value.
-    readonly property real _shown: dragArea.pressed ? dragArea.frac : root._frac
+    readonly property real _target: dragArea.pressed ? dragArea.frac : root._frac
+
+    // Animated fraction. It animates when the *value* changes, but the fill's
+    // pixel width follows this instantly — so resizing the track (panel morph)
+    // doesn't make the fill "grow in" on open.
+    property real _shown: root._target
+    Behavior on _shown {
+        enabled: !dragArea.pressed
+        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+    }
 
     // Track
     Rectangle {
@@ -30,11 +39,6 @@ Item {
             radius: parent.radius
             width: Math.max(height, parent.width * root._shown)
             color: root.fillColor
-
-            Behavior on width {
-                enabled: !dragArea.pressed
-                NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
-            }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
