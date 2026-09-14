@@ -5,7 +5,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import qs
 
-import "../Utils/wifiHelpers.js" as WifiUtils
+import "../Common/"
+import "../../Utils/wifiHelpers.js" as WifiUtils
 
 Item {
     id: root

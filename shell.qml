@@ -1,7 +1,8 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Components
+
+import "./Components/Notifications/"
 
 ShellRoot {
     PanelWindow {

@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import Quickshell.Io
 import qs
 
+import "../Modules/"
+
 Item {
     id: root
     signal dateClicked()
@@ -90,7 +92,7 @@ Item {
             elide: Text.ElideRight
 
              text: (wifi.showList) ? "Wi-Fi" 
-                 : (bt.showList) ? "Bluetooth" 
+                 : (bt.showList) ? "Bluetooth"
                  : (audioSink.showList) ? "Audio Sink" 
                  : (batt.showList) ? "Battery" 
                  : (clipb.showList) ? "Clipboard" 

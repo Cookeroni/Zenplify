@@ -4,7 +4,7 @@ import Quickshell.Services.UPower
 import QtQuick.Layouts
 import qs
 
-import "../Utils/batteryHelpers.js" as BatUtils
+import "../../Utils/batteryHelpers.js" as BatUtils
 
 Item {
     id: root

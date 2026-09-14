@@ -3,9 +3,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import QtQuick.Effects
-import qs.Components
 import qs.Utils
 
+import "./Components/Panel/"
+import "./Components/Bar/"
 
 Item {
     id: root

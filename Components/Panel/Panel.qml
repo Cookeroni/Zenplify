@@ -2,8 +2,12 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 import qs.Utils
-import "../Utils/audioHelpers.js" as AudioHelpers
-import "../Utils/brightnessHelpers.js" as BrightnessHelpers
+
+import "../Modules/"
+
+import "../../Utils/audioHelpers.js" as AudioHelpers
+import "../../Utils/brightnessHelpers.js" as BrightnessHelpers
+
 
 
 Item {
@@ -53,6 +57,7 @@ Item {
     Wifi {
         id: wifiModule
         tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
+
         anchors {
             left: parent.left
             leftMargin: 12
@@ -175,7 +180,7 @@ Item {
         }
     }
 
-    // Power menu (bottom-left)
+    //Power menu (bottom-left)
     PowerMenu {
         id: powerMenu
         visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList)
@@ -216,7 +221,7 @@ Item {
         }
     }
 
-    // System monitors takeover — fills the body below the header when shown
+    //System monitors takeover — fills the body below the header when shown
     SystemMonitor {
         id: systemMonitor
         z: 50

@@ -2,9 +2,9 @@ import QtQuick
 import QtQuick.Layouts
 import qs
 import qs.Utils
-import "../Utils/brightnessHelpers.js" as BrightnessHelpers
+import "../../Utils/audioHelpers.js" as AudioHelpers
 
-// Pill mini-bar view. State lives in the Backlight singleton.
+// Pill mini-bar view. State lives in the Audio singleton.
 Item {
     id: root
 
@@ -15,8 +15,8 @@ Item {
         spacing: 8
 
         Text {
-            text: BrightnessHelpers.icon(Backlight.value)
-            color: Theme.textPrimary
+            text: AudioHelpers.volumeIcon(Audio.volume, Audio.muted)
+            color: Audio.muted ? Theme.textMuted : Theme.textPrimary
             font.family: Theme.fontFamily
             font.pixelSize: 16
         }
@@ -28,16 +28,16 @@ Item {
             color: Theme.bgAccent
 
             Rectangle {
-                width: parent.width * Backlight.value
+                width: parent.width * Math.min(Audio.volume, 1)
                 height: parent.height
                 radius: parent.radius
-                color: Theme.textPrimary
+                color: Audio.muted ? Theme.textMuted : Theme.textPrimary
                 Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
             }
         }
 
         Text {
-            text: BrightnessHelpers.percent(Backlight.value)
+            text: AudioHelpers.volumePercent(Audio.volume)
             color: Theme.textSecondary
             font.family: Theme.fontFamily
             font.pixelSize: 13

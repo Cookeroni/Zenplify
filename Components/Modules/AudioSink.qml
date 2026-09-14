@@ -4,7 +4,7 @@ import Quickshell.Services.Pipewire
 import QtQuick.Layouts
 import qs
 
-import "../Utils/audioHelpers.js" as AudioUtils
+import "../../Utils/audioHelpers.js" as AudioUtils
 
 Item {
     id: root

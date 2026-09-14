@@ -5,7 +5,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import qs
 
-import "../Utils/btHelpers.js" as BluetoothUtils
+import "../Common/"
+import "../../Utils/btHelpers.js" as BluetoothUtils
 
 Item {
     id: root
