@@ -14,7 +14,7 @@ Item {
     id: panelContent
 
     property var pill
-    property bool needsKeyboard: wifiModule.passwordPrompt
+    property bool needsKeyboard: wifiModule.passwordPrompt || personalizationModule.needsKeyboard
     property bool showCalendar: false
 
     visible: pill.isExpanded
@@ -26,16 +26,17 @@ Item {
         function onIsExpandedChanged() {
             if (!pill.isExpanded) {
                 // Add Future Modules Here
-                wifiModule.showList = false;
-                wifiModule.pendingSsid = "";
-                bluetoothModule.showList = false;
-                bluetoothModule.pendingMac = "";
-                audioModule.showList = false;
-                batteryModule.showList = false;
-                clipboardModule.showList = false;
-                powerMenu.expanded = false;
-                panelContent.showCalendar = false;
-                systemMonitor.show = false;
+                wifiModule.showList = false
+                wifiModule.pendingSsid = ""
+                bluetoothModule.showList = false
+                bluetoothModule.pendingMac = ""
+                audioModule.showList = false
+                batteryModule.showList = false
+                clipboardModule.showList = false
+                powerMenu.expanded = false
+                panelContent.showCalendar = false
+                systemMonitor.show = false
+                personalizationModule.show = false
             }
         }
         target: pill
@@ -51,12 +52,13 @@ Item {
         batt: batteryModule
         clipb: clipboardModule
         sysmon: systemMonitor
+        personalization: personalizationModule
         onDateClicked: panelContent.showCalendar = !panelContent.showCalendar
     }
 
     Wifi {
         id: wifiModule
-        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
+        tileHidden: bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: parent.left
@@ -68,7 +70,7 @@ Item {
 
     Bluetooth {
         id: bluetoothModule
-        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
+        tileHidden: wifiModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: bluetoothModule.showList ? parent.left : wifiModule.right
@@ -80,7 +82,7 @@ Item {
 
     AudioSink {
         id: audioModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
+        tileHidden: wifiModule.showList || bluetoothModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: audioModule.showList ? parent.left : bluetoothModule.right
@@ -92,7 +94,7 @@ Item {
 
     Battery {
         id: batteryModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || systemMonitor.show
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: parent.left
@@ -104,7 +106,7 @@ Item {
 
     Dnd {
         id: dndModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || clipboardModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: batteryModule.right
@@ -129,7 +131,7 @@ Item {
 
     Clipboard {
         id: clipboardModule
-        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || systemMonitor.show
+        tileHidden: wifiModule.showList || bluetoothModule.showList || audioModule.showList || batteryModule.showList || systemMonitor.show || personalizationModule.show
 
         anchors {
             left: clipboardModule.showList ? parent.left : nightModule.right
@@ -149,7 +151,7 @@ Item {
         anchors.rightMargin: 16
         anchors.topMargin: 20
         spacing: 10
-        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList || systemMonitor.show)
+        visible: !(wifiModule.showList || bluetoothModule.showList || audioModule.showList || clipboardModule.showList || batteryModule.showList || systemMonitor.show || personalizationModule.show)
 
         PanelSlider {
             Layout.fillWidth: true
@@ -221,6 +223,42 @@ Item {
         }
     }
 
+    // Personalization trigger (bottom-right, left of the system-monitor button)
+    Rectangle {
+        id: personalizationButton
+        visible: !personalizationModule.show && !systemMonitor.show
+                && !(wifiModule.showList || bluetoothModule.showList || audioModule.showList
+                    || batteryModule.showList || clipboardModule.showList)
+        width: 40
+        height: 36
+        radius: 18
+        color: Theme.pillBg
+        anchors { right: monitorButton.left; bottom: parent.bottom; rightMargin: 8; bottomMargin: 16 }
+
+        Text {
+            anchors.centerIn: parent
+            text: "󰏘"          // md-palette
+            color: personBtnMa.containsMouse ? Theme.textPrimary : Theme.textSecondary
+            font { family: Theme.fontFamily; pixelSize: 18 }
+        }
+        MouseArea {
+            id: personBtnMa
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: personalizationModule.show = true
+        }
+    }
+
+    // Personalization takeover — twin of the system-monitor takeover
+    Personalization {
+        id: personalizationModule
+        z: 50
+        anchors {
+            top: header.bottom; left: parent.left; right: parent.right; bottom: parent.bottom
+            topMargin: 16; leftMargin: 16; rightMargin: 16; bottomMargin: 16
+        }
+    }
+
     //System monitors takeover — fills the body below the header when shown
     SystemMonitor {
         id: systemMonitor
@@ -247,6 +285,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             color: "#99000000"
+            radius: 24
             MouseArea {
                 anchors.fill: parent
                 onClicked: panelContent.showCalendar = false

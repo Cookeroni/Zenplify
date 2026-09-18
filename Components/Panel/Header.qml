@@ -17,7 +17,8 @@ Item {
     property var batt
     property var clipb
     property var sysmon
-    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList || clipb.showList || sysmon.show)
+    property var personalization                      
+    property bool listOpen: !(wifi.showList || bt.showList || audioSink.showList || batt.showList || clipb.showList || sysmon.show || personalization.show)
     
     implicitWidth: header.implicitWidth
     implicitHeight: header.implicitHeight
@@ -75,6 +76,11 @@ Item {
                         clipb.showList = false
                     } else if (sysmon.show) {
                         sysmon.show = false
+                    } else if (personalization.show) {
+                        if (personalization.view !== "tiles")
+                            personalization.view = "tiles"
+                        else
+                            personalization.show = false
                     }else {
                         pill.isExpanded = false // Close Panel
                     }
@@ -96,7 +102,9 @@ Item {
                  : (audioSink.showList) ? "Audio Sink" 
                  : (batt.showList) ? "Battery" 
                  : (clipb.showList) ? "Clipboard" 
-                 : (sysmon.show) ? "System Monitors" : "Control Panel"
+                 : (sysmon.show) ? "System Monitors"
+                 : (personalization.show) ? (personalization.view === "workspaces" ? "Workspaces" : "Personalization")
+                 : "Control Panel"
 
             font {
                 bold: true

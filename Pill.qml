@@ -70,7 +70,8 @@ Item {
         Clock {
             id: clockComp
             anchors.centerIn: parent
-            visible: root.pillContent === "clock" && !Player.hasTrack && !root.isExpanded && morphPill.height < 50
+            opacity: (root.pillContent === "clock" && !root.isExpanded && morphPill.height < 50) ? 1 : 0
+            visible: opacity > 0
         }
 
         MediaPill {
@@ -89,6 +90,13 @@ Item {
             id: brightnessComp
             anchors.fill: parent
             visible: root.pillContent === "brightness" && !root.isExpanded && morphPill.height < 50
+        }
+
+        Workspaces {
+            id: workspacesComp
+            anchors.fill: parent
+            opacity: (root.pillContent === "workspace" && !root.isExpanded && morphPill.height < 50) ? 1 : 0
+            visible: opacity > 0
         }
 
         // Click to morph the Pill into Panel
@@ -148,6 +156,15 @@ Item {
         function onChanged() {
             if (root.isExpanded || brightnessRevertGuard.running) return
             root.pillContent = "brightness"
+            visibilityTimer.restart()
+        }
+    }
+
+    Connections {
+        target: Niri
+        function onChanged() {
+            if (root.isExpanded) return
+            root.pillContent = "workspace"
             visibilityTimer.restart()
         }
     }
