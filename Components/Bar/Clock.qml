@@ -28,4 +28,6 @@ RowLayout {
             precision: SystemClock.Minutes
         }
     }
+    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 }
+
