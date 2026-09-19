@@ -70,7 +70,7 @@ Item {
         Clock {
             id: clockComp
             anchors.centerIn: parent
-            opacity: (root.pillContent === "clock" && !root.isExpanded && morphPill.height < 50) ? 1 : 0
+            opacity: (root.pillContent === "clock" && !root.showingMedia && !root.isExpanded && morphPill.height < 50) ? 1 : 0
             visible: opacity > 0
         }
 
