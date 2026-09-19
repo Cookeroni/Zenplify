@@ -30,7 +30,7 @@ One pill that morphs into everything: clock, media, volume, brightness, workspac
 - [Installation](#-installation)
 - [Customization](#-customization)
 - [Project Structure](#-project-structure)
-- [Limitations & Known Issues](#-limitations--known-issues)
+- [Limitations](#-limitations)
 - [Roadmap](#-roadmap)
 - [Acknowledgements](#-acknowledgements)
 - [License](#-license)
@@ -255,7 +255,7 @@ Zenplify/
 
 ---
 
-## ⚠️ Limitations & Known Issues
+## 🚧 Limitations
 
 - **niri-specific.** The workspace module speaks niri's IPC event stream; other compositors would need their own adapter. Zenplify targets **niri on Arch**.
 - **Media is Spotify-focused.** The `Player` service currently selects the Spotify MPRIS player specifically; other players won't drive the media views yet.
