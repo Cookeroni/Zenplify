@@ -70,21 +70,21 @@ HOW TO ADD SCREENSHOTS:
 
 <div align="center">
 
-<!--
+
 | Collapsed pill | Now playing |
 |:---:|:---:|
-| ![Pill](assets/pill.png) | ![Media](assets/media.png) |
+| ![Pill](assets/01.png) | ![Media](assets/02.png) |
 
 | Control panel | Wi-Fi module |
 |:---:|:---:|
-| ![Panel](assets/panel.png) | ![Wi-Fi](assets/wifi.png) |
+| ![Panel](assets/03.png) | ![Wi-Fi](assets/04.png) |
 
-| Notifications | System tray |
+| Battery | Clipboard |
 |:---:|:---:|
-| ![Notifications](assets/notifications.png) | ![Tray](assets/systray.png) |
--->
+| ![Battery](assets/05.png) | ![Clipboard](assets/06.png) |
 
-_Screenshots coming soon — add them under `assets/`._
+
+<!-- _Screenshots coming soon — add them under `assets/`._ -->
 
 </div>
 
