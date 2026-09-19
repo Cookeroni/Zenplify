@@ -41,7 +41,7 @@ Singleton {
     // Resolve the config dir and ensure it exists before FileView touches it.
     // Single-quoted so the shell (not QML) expands the XDG/HOME variables.
     Process {
-        command: ["sh", "-c", "d=\"${XDG_CONFIG_HOME:-$HOME/.config}/zenplify\"; mkdir -p \"$d\"; printf %s \"$d\""]
+        command: ["sh", "-c", "d=\"${XDG_CONFIG_HOME:-$HOME/.config}/Zenplify\"; mkdir -p \"$d\"; printf %s \"$d\""]
         running: true
         stdout: StdioCollector {
             onStreamFinished: root._dir = this.text.trim()
