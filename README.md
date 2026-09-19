@@ -54,8 +54,9 @@ Option B (YouTube thumbnail that links to the video):
 -->
 
 <!-- 📹 Paste your demo video link here -->
+https://github.com/user-attachments/assets/0837b125-96e4-44fd-a129-87f8b64d39c9
 
-_Demo video coming soon._
+_Not Final, some features will be improve later on._
 
 ---
 
