@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell.Wayland
 
 import "./Components/Notifications/"
+import "./Components/Systray/"         
 
 ShellRoot {
     PanelWindow {
@@ -34,4 +35,7 @@ ShellRoot {
     // Slide-out notification drawer + its trigger
     NotificationDrawer {}
     NotificationBell {}
+
+    //Systray
+    Systray {} 
 }
