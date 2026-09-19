@@ -9,7 +9,7 @@ import Quickshell.Io
 // so a partial map is fine. This is display-only; it never renames anything in
 // niri.
 //
-// Storage: ${XDG_CONFIG_HOME:-~/.config}/zenplify/workspace-names.json, shaped
+// Storage: ${XDG_CONFIG_HOME:-~/.config}/Zenplify/workspace-names.json, shaped
 // { "labels": { "1": "Work", "2": "Game" } }. Human-editable and survives pulls.
 Singleton {
     id: root
