@@ -30,7 +30,6 @@ PanelWindow {
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.layer: WlrLayer.Overlay
 
     anchors { top: true; bottom: true; left: true; right: true }
 
