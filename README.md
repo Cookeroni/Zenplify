@@ -93,9 +93,9 @@ HOW TO ADD SCREENSHOTS:
 
 ## 💡 Inspiration
 
-Zenplify grew out of the Linux **ricing** philosophy: a desktop that is lightweight, unobtrusive, and entirely yours. Rather than a traditional always-on status bar packed with widgets, Zenplify collapses everything into a single **morphing pill** at the top of the screen — quiet when you don't need it, and unfolding into a full control panel when you do.
+Zenplify grew out of the Linux **ricing** philosophy: a desktop that is lightweight and entirely yours. Rather than a traditional always-on status bar packed with widgets, Zenplify collapses everything into a single **morphing pill** at the top of the screen — quiet when you don't need it, and unfolding into a full control panel when you do.
 
-The morph itself is inspired by the "dynamic island" interaction: one surface that reshapes to fit the moment — a clock, a now-playing strip, a volume nudge, a workspace switch — instead of a wall of permanent indicators. The goal is a shell that feels calm at rest and capable on demand, while staying hackable QML you can read top-to-bottom.
+The morph itself is inspired by the "dynamic island" interaction: one surface that reshapes to fit the moment — a clock, a now-playing strip, a volume nudge, a workspace switch — instead of a wall of permanent indicators. The goal is a shell that feels calm at rest and capable on demand.
 
 <!-- Feel free to expand this with your own story / what pushed you to build it. -->
 
@@ -103,13 +103,13 @@ The morph itself is inspired by the "dynamic island" interaction: one surface th
 
 ## ✨ Features
 
-### The Pill (bar mode)
-- **Morphing surface** — a single pill that animates between a compact bar and a full panel (`width` / `height` / `radius` transitions).
+### The Pill 
+- **Morphing Surface** — a single pill that animates between a compact bar and a full panel.
 - **Clock** — time at a glance when nothing else is happening.
-- **Now playing** — a compact media strip appears in the pill while Spotify has a track.
-- **Transient flashes** — volume, brightness, and workspace changes briefly take over the pill (~2s) then revert, so feedback is there when you act and gone when you don't.
+- **Media Pill** — a compact media strip appears in the pill while Spotify has a track.
+- **Dyanmic Overlays** — volume, brightness, and workspace changes briefly take over the pill then revert, so feedback is there when you act and gone when you don't.
 
-### Control Panel (expanded pill)
+### Control Panel
 - **Volume & brightness sliders** — draggable, wired to live services.
 - **Audio devices** — output/input switching with mic mute.
 - **Wi-Fi** — scan, connect, and manage networks via NetworkManager.
@@ -121,8 +121,8 @@ The morph itself is inspired by the "dynamic island" interaction: one surface th
 - **Media player** — album art, title/artist, and transport controls (Spotify via MPRIS).
 - **Calendar** — self-contained month grid.
 - **System monitor** — CPU / RAM / swap / disk / temperature / uptime with rolling sparklines.
-- **Personalization** — customization tiles (first: custom workspace names).
-- **Power menu** — shutdown / restart / sleep / lock.
+- **Personalization** — customization tiles (Ex: Custom workspace names).
+- **Power menu** — Shutdown / Restart / Sleep / Lock.
 
 ### Workspaces
 - **niri-aware** — reads niri's IPC event stream; a vertical rail flashes on workspace switch.
@@ -135,10 +135,7 @@ The morph itself is inspired by the "dynamic island" interaction: one surface th
 
 ### System Tray
 - **StatusNotifierItem host** rendered as its own morphing pill (top-left).
-- Left-click activate · middle-click secondary action · scroll to adjust · **right-click custom-rendered menus** with submenu drill-in (works with lazy menus like `nm-applet`'s "Available networks").
-
-### Shared bits
-- Shimmer **skeleton** placeholders for loading lists, a reusable **slider**, and a central **theme** of color/font tokens.
+- Left-click activate with submenu drill-in (works with lazy menus like `nm-applet`'s "Available networks").
 
 ---
 
@@ -239,15 +236,15 @@ Zenplify/
 │
 ├── Utils/                    # Services (singletons) + pure JS helpers
 │   ├── Audio.qml  Backlight.qml  Niri.qml
-│   ├── Notifications.qml  Player.qml  SysInfo.qml
+│   ├── Notifications.qml  Player.qml  SysInfo.qml Workspaces.qml
 │   └── *.js                  # nmcli/bt/niri parsing, glyphs, formatting (testable)
 │
 ├── Components/
 │   ├── Bar/                  # Pill mini-views: Clock, Volume, Brightness, MediaPill, Workspaces
-│   ├── Panel/                # Panel pieces: Header, sliders, Calendar, MediaPlayer,
-│   │                         #   SystemMonitor, Personalization, PowerMenu, Panel
-│   ├── Modules/              # Panel modules: Wifi, Bluetooth, Battery, AudioSink,
-│   │                         #   Clipboard, Dnd (Zen Mode), Nightlight
+│   ├── Panel/                # Panel pieces: Header, sliders, Calendar, MediaPlayer, SystemMonitor, PowerMenu,
+│   │                         # Personalization, Panel
+│   ├── Modules/              # Panel modules: Wifi, Bluetooth, Battery, AudioSink, Clipboard, Dnd (Zen Mode), Nightlight
+│   │                          
 │   ├── Notifications/        # Daemon UI: Popups, Drawer, Bell, Center, NotifCard
 │   ├── Systray/              # Systray pill + recursive TrayMenuLevel
 │   └── Common/               # Shared: SkeletonRow (shimmer placeholder)
@@ -257,7 +254,7 @@ Zenplify/
 
 ## 🚧 Limitations
 
-- **niri-specific.** The workspace module speaks niri's IPC event stream; other compositors would need their own adapter. Zenplify targets **niri on Arch**.
+- **niri-specific.** The workspace module speaks niri's IPC event stream; other compositors would need their own adapter. As of now Zenplify targets **niri on Arch**.
 - **Media is Spotify-focused.** The `Player` service currently selects the Spotify MPRIS player specifically; other players won't drive the media views yet.
 - **External tools required.** Modules depend on the CLI tools above; if one isn't installed, that module simply has nothing to show.
 - **One notification daemon only.** You must disable mako/dunst (or any other) so Zenplify can own the notification bus name.
